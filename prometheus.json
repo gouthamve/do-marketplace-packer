@@ -1,0 +1,60 @@
+{
+  "variables": {
+    "prometheus_version": "2.9.1",
+    "prometheus_checksum": "1b094a92507956accc4a1b1bd9d92df20ac5a9c207ebed46fdc46e5d69aa6094",
+    "node_exporter_version": "0.17.0",
+    "node_exporter_checksum": "d2e00d805dbfdc67e7291ce2d2ff151f758dd7401dd993411ff3818d0e231489",
+    "do_api_token": "{{env `DO_API_TOKEN`}}"
+  },
+  "builders": [{
+    "type": "digitalocean",
+    "api_token": "{{user `do_api_token`}}",
+    "image": "ubuntu-18-04-x64",
+    "region": "blr1",
+    "size": "512mb",
+    "ssh_username": "root",
+    "snapshot_name": "prometheus-v{{user `prometheus_version`}}-{{timestamp}}"
+  }],
+  "provisioners": [{
+    "type": "file",
+    "source": "files/99-one-click",
+    "destination": "/etc/update-motd.d/99-one-click"
+  },{
+    "type": "shell",
+    "script": "scripts/setup_droplet.sh" 
+  },{
+    "type": "file",
+    "source": "files/prometheus.yml",
+    "destination": "/etc/prometheus/prometheus.yml"
+  },{
+    "type": "file",
+    "source": "files/prometheus.service",
+    "destination": "/etc/systemd/system/"
+  },{
+    "type": "file",
+    "source": "files/node_exporter.service",
+    "destination": "/etc/systemd/system/"
+  },{
+    "type": "shell",
+    "environment_vars": [
+      "PROM_VERSION={{user `prometheus_version`}}",
+      "PROM_FILE=prometheus-{{user `prometheus_version`}}.linux-amd64",
+      "PROM_CHECKSUM={{user `prometheus_checksum`}}"
+    ],
+    "script": "scripts/install_prometheus.sh" 
+  },{
+    "type": "shell",
+    "environment_vars": [
+      "NE_VERSION={{user `node_exporter_version`}}",
+      "NE_FILE=node_exporter-{{user `node_exporter_version`}}.linux-amd64",
+      "NE_CHECKSUM={{user `node_exporter_checksum`}}"
+    ],
+    "script": "scripts/install_node_exporter.sh" 
+  }, {
+    "type": "shell",
+    "scripts": [
+      "scripts/01-clean_image.sh", 
+      "scripts/02-check_image.sh"
+    ]
+  }]
+}
