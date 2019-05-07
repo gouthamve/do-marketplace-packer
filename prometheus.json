@@ -1,7 +1,7 @@
 {
   "variables": {
-    "prometheus_version": "2.9.1",
-    "prometheus_checksum": "1b094a92507956accc4a1b1bd9d92df20ac5a9c207ebed46fdc46e5d69aa6094",
+    "prometheus_version": "2.9.2",
+    "prometheus_checksum": "19d29910fd0e51765d47b59b9276df016441ad4c6c48e3b27e5aa9acb5d1da26",
     "node_exporter_version": "0.17.0",
     "node_exporter_checksum": "d2e00d805dbfdc67e7291ce2d2ff151f758dd7401dd993411ff3818d0e231489",
     "do_api_token": "{{env `DO_API_TOKEN`}}"
